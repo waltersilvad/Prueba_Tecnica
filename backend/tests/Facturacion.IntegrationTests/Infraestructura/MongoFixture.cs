@@ -6,9 +6,17 @@ namespace Facturacion.IntegrationTests.Infraestructura;
 /// Un contenedor de MongoDB real, compartido por todas las pruebas de la colección.
 /// Cada prueba usa su propia base de datos para no interferir con las demás.
 /// </summary>
+/// <remarks>
+/// Sin autenticación, igual que el Mongo del <c>docker-compose.yml</c>. Con usuario y contraseña, la imagen arranca un
+/// <c>mongod</c> temporal para crearlos y luego el definitivo; con la máquina cargada (por ejemplo, en CI) el temporal
+/// puede no haber liberado el puerto y el contenedor se cae ("Address already in use").
+/// </remarks>
 public sealed class MongoFixture : IAsyncLifetime
 {
-    private readonly MongoDbContainer _contenedor = new MongoDbBuilder("mongo:8.0").Build();
+    private readonly MongoDbContainer _contenedor = new MongoDbBuilder("mongo:8.0")
+        .WithUsername(string.Empty)
+        .WithPassword(string.Empty)
+        .Build();
 
     public string CadenaConexion => _contenedor.GetConnectionString();
 
