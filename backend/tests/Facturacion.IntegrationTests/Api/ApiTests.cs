@@ -74,6 +74,10 @@ public sealed class ApiTests(MongoFixture mongo)
 
     [Theory]
     [InlineData("http://localhost:5173", true)]
+    [InlineData("http://localhost:8080", true)]
+    // Docker Desktop muestra los puertos publicados en 127.0.0.1: el front también se abre con esa dirección.
+    [InlineData("http://127.0.0.1:5173", true)]
+    [InlineData("http://127.0.0.1:8080", true)]
     [InlineData("http://sitio-ajeno.example.com", false)]
     public async Task Cors_SoloPermiteLosOrigenesConfigurados(string origen, bool permitido)
     {

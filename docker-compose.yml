@@ -37,9 +37,13 @@ services:
       # Development habilita el seed automático y el endpoint de reinicio de datos de prueba.
       ASPNETCORE_ENVIRONMENT: Development
       Mongo__CadenaConexion: mongodb://mongo:27017
-      # El origen del front se deriva del puerto publicado para que CORS siempre coincida.
+      # El origen del front se deriva del puerto publicado para que CORS siempre coincida. Se aceptan localhost y
+      # 127.0.0.1 porque el navegador los trata como orígenes distintos y Docker Desktop enlaza los puertos con 127.0.0.1.
+      # Se definen los cuatro índices para reemplazar por completo la lista de appsettings.json.
       Cors__OrigenesPermitidos__0: http://localhost:${PUERTO_WEB:-8080}
       Cors__OrigenesPermitidos__1: http://localhost:5173
+      Cors__OrigenesPermitidos__2: http://127.0.0.1:${PUERTO_WEB:-8080}
+      Cors__OrigenesPermitidos__3: http://127.0.0.1:5173
     ports:
       - "127.0.0.1:${PUERTO_API:-5080}:8080"
     volumes:
