@@ -1,0 +1,60 @@
+# Levanta todo el sistema: docker compose up --build
+#   Front:  http://localhost:8080   (puerto configurable con PUERTO_WEB)
+#   API:    http://localhost:5080   (puerto configurable con PUERTO_API; Scalar en /scalar)
+#   Correos simulados: ./salida-correos/*.eml
+name: facturacion
+
+services:
+  mongo:
+    image: mongo:8.0
+    container_name: facturacion-mongo
+    restart: unless-stopped
+    ports:
+      # Solo en localhost: Mongo corre sin autenticación para desarrollo local.
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - mongo-datos:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  api:
+    build: ./backend
+    container_name: facturacion-api
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    # Opcional: .env permite activar Brevo (ver .env.example). Sin él, se usa el proveedor Consola.
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # Development habilita el seed automático y el endpoint de reinicio de datos de prueba.
+      ASPNETCORE_ENVIRONMENT: Development
+      Mongo__CadenaConexion: mongodb://mongo:27017
+      # El origen del front se deriva del puerto publicado para que CORS siempre coincida.
+      Cors__OrigenesPermitidos__0: http://localhost:${PUERTO_WEB:-8080}
+      Cors__OrigenesPermitidos__1: http://localhost:5173
+    ports:
+      - "127.0.0.1:${PUERTO_API:-5080}:8080"
+    volumes:
+      - ./salida-correos:/app/salida-correos
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:${PUERTO_API:-5080}
+    container_name: facturacion-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "127.0.0.1:${PUERTO_WEB:-8080}:8080"
+
+volumes:
+  mongo-datos:

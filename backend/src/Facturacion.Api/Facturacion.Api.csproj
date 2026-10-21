@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <!-- Credenciales locales (por ejemplo, SMTP de Brevo) con `dotnet user-secrets`, fuera del repositorio. -->
+    <UserSecretsId>b28d15d8-87db-4ca3-9463-17470a30f87a</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.2.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.13" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.18.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Facturacion.Application\Facturacion.Application.csproj" />
+    <ProjectReference Include="..\Facturacion.Infrastructure\Facturacion.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

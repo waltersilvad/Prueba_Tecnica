@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend (.NET)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: backend/global.json
+
+      - name: Restaurar
+        run: dotnet restore backend/Facturacion.sln
+
+      - name: Compilar (advertencias como errores)
+        run: dotnet build backend/Facturacion.sln -c Release --no-restore
+
+      # Incluye las pruebas de integración: Testcontainers usa el Docker del runner.
+      - name: Pruebas con cobertura
+        run: >
+          dotnet test backend/Facturacion.sln -c Release --no-build
+          --settings backend/coverlet.runsettings --results-directory ./cobertura
+
+      - name: Publicar cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura-backend
+          path: cobertura/**/coverage.cobertura.xml
+
+  frontend:
+    name: Frontend (React)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm test
+      - run: npm run build
+
+  docker:
+    name: Imágenes Docker
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Construir imágenes del docker compose
+        run: docker compose build

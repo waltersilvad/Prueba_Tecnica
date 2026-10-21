@@ -1,0 +1,5 @@
+# Reglas específicas de los proyectos de pruebas.
+
+[*.cs]
+# Los nombres de prueba siguen la convención Metodo_Escenario_ResultadoEsperado.
+dotnet_diagnostic.CA1707.severity = none

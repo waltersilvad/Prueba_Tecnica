@@ -1,0 +1,218 @@
+@import 'tailwindcss';
+
+/* El tema lo decide el atributo data-theme de <html> (selector Claro / Oscuro / Sistema), no el sistema operativo. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/*
+ * Tokens semánticos de la interfaz. Cada uno tiene su valor claro y oscuro; los componentes usan solo los
+ * nombres (bg-superficie, text-texto-2, ...), así el cambio de tema no requiere clases dark: en cada elemento.
+ * Los colores de DATOS (gráficas y estados) están en src/utils/paleta.ts, validados para ambos modos.
+ */
+:root {
+  --c-pagina: #f4f4f1;
+  --c-superficie: #fcfcfb;
+  --c-hundida: #f0efec;
+  --c-borde: rgb(11 11 11 / 10%);
+  --c-rejilla: #e1e0d9;
+  --c-texto: #0b0b0b;
+  --c-texto-2: #52514e;
+  --c-tenue: #6f6e69;
+  --c-acento: #2a78d6;
+  --c-acento-hover: #1c5cab;
+  --c-acento-suave: #e6f0fc;
+  --c-sobre-acento: #ffffff;
+  --c-exito: #006300;
+  --c-exito-suave: #e7f6e7;
+  --c-critico: #b42318;
+  --c-critico-suave: #fdecea;
+  --c-aviso: #8a5a00;
+  --c-lateral: #0d366b;
+  --c-lateral-texto: #dce8f8;
+  --c-lateral-tenue: #9ec5f4;
+  --c-lateral-activo: rgb(255 255 255 / 14%);
+  --c-lateral-hover: rgb(255 255 255 / 8%);
+  --c-lateral-borde: rgb(255 255 255 / 18%);
+}
+
+[data-theme='dark'] {
+  --c-pagina: #0d0d0d;
+  --c-superficie: #1a1a19;
+  --c-hundida: #232322;
+  --c-borde: rgb(255 255 255 / 10%);
+  --c-rejilla: #2c2c2a;
+  --c-texto: #f0efec;
+  --c-texto-2: #c3c2b7;
+  --c-tenue: #9a998f;
+  --c-acento: #3987e5;
+  --c-acento-hover: #5598e7;
+  --c-acento-suave: rgb(57 135 229 / 16%);
+  --c-exito: #0ca30c;
+  --c-exito-suave: rgb(12 163 12 / 14%);
+  --c-critico: #e66767;
+  --c-critico-suave: rgb(208 59 59 / 16%);
+  --c-aviso: #fab219;
+  --c-lateral: #111110;
+  --c-lateral-texto: #e4e3de;
+  --c-lateral-tenue: #9a998f;
+}
+
+@theme inline {
+  --color-pagina: var(--c-pagina);
+  --color-superficie: var(--c-superficie);
+  --color-hundida: var(--c-hundida);
+  --color-borde: var(--c-borde);
+  --color-rejilla: var(--c-rejilla);
+  --color-texto: var(--c-texto);
+  --color-texto-2: var(--c-texto-2);
+  --color-tenue: var(--c-tenue);
+  --color-acento: var(--c-acento);
+  --color-acento-hover: var(--c-acento-hover);
+  --color-acento-suave: var(--c-acento-suave);
+  --color-sobre-acento: var(--c-sobre-acento);
+  --color-exito: var(--c-exito);
+  --color-exito-suave: var(--c-exito-suave);
+  --color-critico: var(--c-critico);
+  --color-critico-suave: var(--c-critico-suave);
+  --color-aviso: var(--c-aviso);
+  --color-lateral: var(--c-lateral);
+  --color-lateral-texto: var(--c-lateral-texto);
+  --color-lateral-tenue: var(--c-lateral-tenue);
+  --color-lateral-activo: var(--c-lateral-activo);
+  --color-lateral-hover: var(--c-lateral-hover);
+  --color-lateral-borde: var(--c-lateral-borde);
+}
+
+@theme {
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Única animación de entrada: fundido con un desplazamiento corto. Solo con motion-safe:. */
+  --animate-aparecer: aparecer 360ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+
+  @keyframes aparecer {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-pagina font-sans text-texto antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-acento;
+  }
+}
+
+/* Piezas repetidas: una sola definición para que botones, tarjetas y campos sean idénticos en todas las vistas.
+   Son @utility (no clases sueltas) para poder combinarse entre sí con @apply. */
+@utility tarjeta {
+  @apply min-w-0 rounded-xl border border-borde bg-superficie p-5 shadow-sm;
+}
+
+@utility boton {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg border border-acento bg-acento px-4 py-2 text-sm font-semibold whitespace-nowrap text-sobre-acento transition-colors duration-150 enabled:hover:border-acento-hover enabled:hover:bg-acento-hover disabled:cursor-not-allowed disabled:opacity-55;
+}
+
+@utility boton-secundario {
+  @apply boton border-borde bg-superficie text-texto enabled:hover:border-borde enabled:hover:bg-hundida;
+}
+
+@utility boton-pequeno {
+  @apply px-3 py-1.5 text-xs;
+}
+
+@utility boton-lateral {
+  @apply boton w-full justify-start border-lateral-borde bg-transparent font-medium text-lateral-texto enabled:hover:border-lateral-borde enabled:hover:bg-lateral-hover;
+}
+
+@utility boton-peligro {
+  @apply boton-secundario text-critico enabled:hover:border-critico enabled:hover:bg-critico-suave;
+}
+
+@utility etiqueta-campo {
+  @apply text-xs font-semibold text-texto-2;
+}
+
+@utility control {
+  @apply w-full min-w-0 rounded-lg border border-borde bg-superficie px-3 py-2 text-sm text-texto transition-colors aria-invalid:border-critico disabled:opacity-60;
+}
+
+@utility alerta-error {
+  @apply rounded-lg bg-critico-suave px-4 py-3 text-sm text-critico;
+}
+
+@utility alerta-exito {
+  @apply rounded-lg bg-exito-suave px-4 py-3 text-sm text-exito;
+}
+
+/* Tablas: usan selectores de descendientes, por eso van como componentes. */
+@layer components {
+  .tabla-contenedor {
+    @apply overflow-hidden rounded-xl border border-borde bg-superficie shadow-sm;
+  }
+
+  .tabla {
+    @apply w-full border-collapse text-sm;
+  }
+
+  .tabla th {
+    @apply border-b border-rejilla bg-hundida px-4 py-3 text-left text-xs font-semibold tracking-wide text-tenue uppercase;
+  }
+
+  .tabla td {
+    @apply border-b border-rejilla px-4 py-3 align-top;
+  }
+
+  .tabla tbody tr {
+    @apply transition-colors hover:bg-hundida/60;
+  }
+
+  .tabla tbody tr:last-child td {
+    @apply border-b-0;
+  }
+
+  /*
+   * Tabla responsiva: en pantallas angostas cada fila se vuelve una tarjeta y cada celda muestra su
+   * encabezado (data-label). Así nunca hace falta desplazamiento horizontal.
+   */
+  @media (width < 48rem) {
+    .tabla-responsiva-contenedor {
+      @apply overflow-visible border-0 bg-transparent shadow-none;
+    }
+
+    .tabla-responsiva thead {
+      @apply sr-only;
+    }
+
+    .tabla-responsiva,
+    .tabla-responsiva tbody,
+    .tabla-responsiva tr,
+    .tabla-responsiva td {
+      @apply block;
+    }
+
+    .tabla-responsiva tbody {
+      @apply space-y-3;
+    }
+
+    .tabla-responsiva tbody tr {
+      @apply rounded-xl border border-borde bg-superficie p-4 shadow-sm hover:bg-superficie;
+    }
+
+    .tabla-responsiva td {
+      @apply flex items-start justify-between gap-4 border-0 px-0 py-1.5 text-right;
+    }
+
+    .tabla-responsiva td::before {
+      @apply shrink-0 pt-0.5 text-left text-xs font-semibold tracking-wide text-tenue uppercase;
+      content: attr(data-label);
+    }
+  }
+}

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cobertura con coverlet. Excluye los archivos que generan los source generators (OpenAPI, LoggerMessage)
+     para medir solo el código escrito a mano. Uso: ver la sección de pruebas del README.
+     Se excluye por archivo y no por atributo: GeneratedCodeAttribute en la parte generada de una clase
+     parcial haría que coverlet descartara la clase completa, incluido el código propio. -->
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat code coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+          <ExcludeByFile>**/*.g.cs,**/*.generated.cs</ExcludeByFile>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

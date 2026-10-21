@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Facturacion.Application\Facturacion.Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Permite probar piezas internas sin conectarse a servicios externos (por ejemplo, la clasificación de fallas SMTP). -->
+    <InternalsVisibleTo Include="Facturacion.IntegrationTests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MailKit" Version="4.18.1" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="10.0.13" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.13" />
+    <PackageReference Include="MongoDB.Driver" Version="3.12.0" />
+    <!-- Fija la versión corregida de una dependencia transitiva de MimeKit (10.0.0 tiene avisos de seguridad). -->
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
+  </ItemGroup>
+
+</Project>
