@@ -6,7 +6,8 @@ name: facturacion
 
 services:
   mongo:
-    image: mongo:8.0
+    # 7.0 y no 8.0: desde mediados de la serie 8.0, mongod no arranca en kernels Linux 6.19+ (SERVER-121912).
+    image: mongo:7.0
     container_name: facturacion-mongo
     restart: unless-stopped
     ports:
