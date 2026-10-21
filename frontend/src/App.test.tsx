@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { api } from './api/endpoints'
 import { App } from './App'
 import { clientesPrueba, enviosPrueba, resumenPrueba } from './test/datosPrueba'
@@ -20,7 +20,21 @@ function renderizarEn(ruta: string) {
   )
 }
 
+/** Límite para la primera importación de las vistas (Recharts es pesado y en CI se transforma en frío). */
+const TIEMPO_PRECARGA_MS = 30_000
+
 describe('App', () => {
+  // Las vistas se cargan de forma diferida. Se importan una vez antes de las pruebas para que la primera no dependa
+  // de lo rápido que la máquina transforme Recharts: `lazy()` sigue haciendo su import, pero ya lo encuentra en caché.
+  beforeAll(async () => {
+    await Promise.all([
+      import('./pages/PanelPage'),
+      import('./pages/ClientesPage'),
+      import('./pages/FacturasPage'),
+      import('./pages/EnviosPage'),
+    ])
+  }, TIEMPO_PRECARGA_MS)
+
   beforeEach(() => {
     vi.mocked(api.obtenerResumen).mockResolvedValue(resumenPrueba)
     vi.mocked(api.listarEnvios).mockResolvedValue(enviosPrueba)

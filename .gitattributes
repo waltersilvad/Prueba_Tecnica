@@ -1,0 +1,6 @@
+# Finales de línea: LF en el repositorio y en cualquier clon, sin importar core.autocrlf.
+# Así Prettier (endOfLine: lf) y la CI ven los mismos archivos en Windows, Linux y macOS.
+* text=auto eol=lf
+
+# Visual Studio genera y espera CRLF en la solución; en el repositorio se sigue guardando con LF.
+*.sln text eol=crlf
